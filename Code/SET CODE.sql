@@ -1,0 +1,56 @@
+CREATE DATABASE DEPARTMENT;
+USE DEPARTMENT;
+
+CREATE TABLE DEPT1(
+	EMPID INT NOT NULL PRIMARY KEY,
+	NAME VARCHAR(25),
+    ROLE VARCHAR(50)
+);
+
+INSERT INTO DEPT1 VALUES (1,'A','Engineer');
+INSERT INTO DEPT1 VALUES (2,'B','Salesman');
+INSERT INTO DEPT1 VALUES (3,'C','Manager');
+INSERT INTO DEPT1 VALUES (4,'D','Salesman');
+INSERT INTO DEPT1 VALUES (5,'E','Engineer');
+
+SELECT * FROM DEPT1;
+
+CREATE TABLE DEPT2(
+	EMPID INT NOT NULL PRIMARY KEY,
+	NAME VARCHAR(25),
+    ROLE VARCHAR(50)
+);
+
+INSERT INTO DEPT2 VALUES (3,'C','Manager');
+INSERT INTO DEPT2 VALUES (6,'F','Marketing');
+INSERT INTO DEPT2 VALUES (7,'G','Salesman');
+
+SELECT * FROM DEPT2;
+
+
+-- SET OPERATION
+
+-- UNION
+
+-- List out all the employees in the company
+SELECT * FROM DEPT1
+UNION
+SELECT * FROM DEPT2;
+
+-- List out all the employees in all departments who work as salesman
+SELECT * FROM DEPT1 WHERE ROLE='Salesman'
+UNION
+SELECT * FROM DEPT2 WHERE ROLE='Salesman';
+
+
+-- INTERSECT
+-- List out all the employees who work in all the departments.
+SELECT DEPT1.* FROM DEPT1
+INNER JOIN DEPT2 USING(EMPID);
+
+
+-- MINUS
+-- List out all the employees working in dept1 but not in dept2
+SELECT DEPT1.* FROM DEPT1
+LEFT JOIN DEPT2 USING(EMPID) WHERE DEPT2.EMPID IS NULL;
+

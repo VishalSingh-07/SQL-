@@ -1,0 +1,142 @@
+CREATE DATABASE COMPANY;
+USE COMPANY;
+
+CREATE TABLE PROJECT(
+	ID INT NOT NULL PRIMARY KEY,
+    EMPID INT,
+    NAME VARCHAR(25),
+    STARTDATE DATE,
+    CLIENTID INT
+);
+
+INSERT INTO PROJECT VALUES (1,1,'A','2021-04-21',3);
+INSERT INTO PROJECT VALUES (2,2,'B','2021-03-12',1);
+INSERT INTO PROJECT VALUES (3,3,'C','2021-01-16',5);
+INSERT INTO PROJECT VALUES (4,3,'D','2021-04-27',2);
+INSERT INTO PROJECT VALUES (5,5,'E','2021-05-01',4);
+
+SELECT * FROM PROJECT;
+
+CREATE TABLE EMPLOYEE(
+	ID INT NOT NULL PRIMARY KEY,
+    FNAME VARCHAR(25),
+    LNAME VARCHAR(25),
+    AGE INT NOT NULL,
+    EMAILID VARCHAR(50),
+    PHONENO VARCHAR(15),
+    CITY VARCHAR(25)
+);
+
+INSERT INTO EMPLOYEE VALUES (1,'Aman','Proto',32,'aman@gmail.com',898,'Delhi');
+INSERT INTO EMPLOYEE VALUES (2,'Yagya','Narayan',44,'yagya@gmail.com',222,'Palam');
+INSERT INTO EMPLOYEE VALUES (3,'Rahul','BD',22,'rahul@gmail.com',444,'Kolkata');
+INSERT INTO EMPLOYEE VALUES (4,'Jatin','Hermit',31,'jatin@gmail.com',666,'Raipur');
+INSERT INTO EMPLOYEE VALUES (5,'PK','Pandey',21,'pk@gmail.com',555,'Jaipur');
+
+
+SELECT * FROM EMPLOYEE;
+
+CREATE TABLE CLIENT(
+	ID INT NOT NULL PRIMARY KEY,
+    FNAME VARCHAR(25),
+    LNAME VARCHAR(25),
+    AGE INT NOT NULL,
+    EMAILID VARCHAR(50),
+    PHONENO VARCHAR(15),
+    CITY VARCHAR(25),
+    EMPID INT
+);
+
+INSERT INTO CLIENT VALUES (1,'Mac','Rogers',47,'mac@hotmail.com',333,'Kolkata',3);
+INSERT INTO CLIENT VALUES (2,'Max','Poirier',27,'max@gmail.com',222,'Kolkata',3);
+INSERT INTO CLIENT VALUES (3,'Peter','Jain',24,'peter@abc.com',111,'Delhi',1);
+INSERT INTO CLIENT VALUES (4,'Sushant','Aggarwal',23,'sushant@yahoo.com',45454,'Hyderabad',5);
+INSERT INTO CLIENT VALUES (5,'Pratap','Singh',36,'p@xyz.com',77767,'Mumbai',2);
+
+SELECT * FROM CLIENT;
+
+-- INNER JOIN
+-- Enlist all the employee ID's, names along with the Project allocated to them.
+SELECT EMPLOYEE.ID, EMPLOYEE.FNAME, EMPLOYEE.LNAME, PROJECT.ID, PROJECT.NAME 
+FROM EMPLOYEE INNER JOIN PROJECT ON EMPLOYEE.ID=PROJECT.EMPID;
+
+-- WITHOUT USING JOIN KEYWORD
+SELECT EMPLOYEE.ID, EMPLOYEE.FNAME, EMPLOYEE.LNAME, PROJECT.ID, PROJECT.NAME 
+FROM EMPLOYEE, PROJECT WHERE EMPLOYEE.ID=PROJECT.EMPID;
+
+-- Fetch out all the employee ID's and their contact details who have been working
+-- from Jaipur with the clients name working in Hyderabad
+SELECT EMPLOYEE.ID, EMPLOYEE.EMAILID, EMPLOYEE.PHONENO, CLIENT.FNAME AS CLIENT_FNAME, CLIENT.LNAME AS CLIENT_LNAME
+FROM EMPLOYEE INNER JOIN CLIENT ON EMPLOYEE.ID=CLIENT.EMPID 
+WHERE EMPLOYEE.CITY='Jaipur' AND CLIENT.CITY='Hyderabad';
+
+-- LEFT JOIN
+-- Fetch out each project allocated to each employee
+SELECT P.ID, P.NAME, E.FNAME, E.LNAME, E.EMAILID FROM EMPLOYEE AS E 
+LEFT JOIN PROJECT AS P ON E.ID=P.EMPID;
+
+
+
+
+-- RIGHT JOIN
+-- List out all the projects along with the employee's name and their respective allocated email ID.
+SELECT * FROM EMPLOYEE AS E
+RIGHT JOIN PROJECT AS P ON E.ID=P.EMPID;
+
+
+
+-- CROSS JOIN
+-- List out all the combinations possible for the employee's name and project that can exist.
+SELECT E.FNAME, E.LNAME, P.ID, P.NAME FROM EMPLOYEE AS E
+CROSS JOIN PROJECT AS P;
+
+
+-- SUB QUERIES
+-- WHERE clause same table
+-- employees with age > 30
+SELECT * FROM EMPLOYEE WHERE AGE IN (SELECT AGE FROM EMPLOYEE WHERE AGE>30);
+
+-- WHERE clause different table
+-- emp details working in more than 1 project.
+SELECT * FROM EMPLOYEE WHERE ID IN (
+SELECT EMPID FROM PROJECT GROUP BY EMPID HAVING COUNT(EMPID)>1
+);
+
+
+-- single value subquery
+-- emp details having age > avg(age)
+SELECT * FROM EMPLOYEE WHERE AGE> (SELECT AVG(AGE) FROM EMPLOYEE);
+
+
+-- FROM clause -- derived tables
+-- select max age person whose first name has 'a'
+SELECT MAX(AGE) FROM (SELECT * FROM EMPLOYEE WHERE FNAME LIKE '%a%') AS temp;
+
+
+-- Corelated subquery
+-- find 3rd oldest employee
+SELECT * 
+FROM EMPLOYEE E1
+WHERE 3 = (
+	SELECT COUNT(E2.AGE)
+    FROM EMPLOYEE E2
+    WHERE E2.AGE >=E1.AGE
+);
+
+-- VIEW
+SELECT * FROM EMPLOYEE;
+
+-- creating a view
+CREATE VIEW CUSTOM_VIEW AS SELECT FNAME,AGE FROM EMPLOYEE;
+
+-- VIEWING FROM VIEW
+SELECT * FROM CUSTOM_VIEW;
+
+
+-- Altering the view
+ALTER VIEW CUSTOM_VIEW AS SELECT FNAME, LNAME, AGE FROM EMPLOYEE;
+
+-- DROPPING THE VIEW
+DROP VIEW IF EXISTS CUSTOM_VIEW;
+
+
